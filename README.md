@@ -19,6 +19,4 @@
 | Team Ground Rule | [https://github.com/ewha-deep-art/deep-art/blob/main/Team_Ground_Rule.md](https://github.com/ewha-deep-art/deep-art/blob/main/Team_Ground_Rule.md) |
 | 최종수정일 | 2026.03.14 |
 
-[↑ 목록으로](#2026-spring-전체-프로젝트-리스트)
-
 ---
