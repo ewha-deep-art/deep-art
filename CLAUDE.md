@@ -25,6 +25,16 @@ The service analyzes exhibition images using vision models, generates accessible
 
 Feature branch naming should clearly reflect the scope of the feature being implemented (e.g., `feature/image-upload`, `feature/tts-integration`).
 
+### Local Testing Before Commit/Push
+
+Before every `git commit` or `git push`, run the local dev server and manually verify that no 404 or 500 errors occur on affected pages:
+
+```bash
+npm run dev   # start local dev server (localhost:3000)
+```
+
+Navigate to all pages touched by your changes and confirm they load correctly without errors.
+
 ### Commit Convention
 
 Commit whenever a meaningful unit of functionality is complete. Use the following prefixes:
@@ -52,11 +62,26 @@ npm run lint     # lint check
 ## Tech Stack
 
 - **Next.js 16** (App Router, TypeScript) — `app/` directory
+- **React 19** — `react@19.2.4`
 - **shadcn/ui v4** (base-ui, Tailwind CSS v4) — `components/ui/`
 - **Supabase** (Auth, PostgreSQL, Storage) — `lib/supabase/`
 - **Vercel** — deployment
 
 ## Architecture
+
+### Route Structure
+
+```
+app/
+├── (auth)/          # Public pages (no auth check)
+│   ├── login/
+│   └── signup/
+└── (main)/          # Protected pages — layout.tsx enforces auth
+    └── docents/
+        ├── page.tsx       # List
+        ├── new/page.tsx   # Create
+        └── [id]/page.tsx  # Detail
+```
 
 ### Current (MVP)
 
@@ -64,17 +89,26 @@ Three core modules, AI replaced with Mock APIs for now:
 
 1. **Image Analysis** — `app/api/docents/generate/route.ts` (mock → replace with Vision/LMM)
 2. **Content Generation** — same route, returns sample text (mock → replace with LLM+RAG)
-3. **Voice Synthesis** — `app/api/docents/audio/route.ts` (mock → replace with TTS)
+3. **Voice Synthesis** — `app/api/docents/generate/route.ts` also sets mock audio_url (mock → replace with TTS); `app/api/docents/audio/route.ts` exists but is currently unused
+
+Mock data lives in `lib/mock.ts` (3 sample Korean art descriptions + sample audio URL).
+
+### Docent creation flow
+
+1. User uploads image → stored in Supabase Storage (`docent-images/{user_id}/{timestamp}.ext`)
+2. DB entry created with `status: "processing"`
+3. `/api/docents/generate` called fire-and-forget (no await) — updates DB with text, audio_url, `status: "done"`
+4. User is redirected to detail page and refreshes to see results
 
 ### Auth flow
 
-`proxy.ts` (Next.js 16 proxy convention, replaces middleware) handles auth-based redirects.
+`app/(main)/layout.tsx` (Server Component) calls `supabase.auth.getUser()` and redirects to `/login` if unauthenticated.
+`middleware.ts` handles Supabase session refresh (token rotation) — required for server components to read auth cookies correctly. No auth logic in middleware; auth gate is solely in `(main)/layout.tsx`.
 Supabase SSR clients: `lib/supabase/client.ts` (browser) and `lib/supabase/server.ts` (server).
 
 ### Supabase schema
 
 ```sql
-profiles(id uuid references auth.users, display_name text)
 docents(id, user_id, title, image_url, docent_text, audio_url, status, created_at)
 ```
 
