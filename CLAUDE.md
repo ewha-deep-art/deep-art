@@ -80,7 +80,17 @@ app/
     └── docents/
         ├── page.tsx       # List
         ├── new/page.tsx   # Create
+        ├── demo/page.tsx  # Mock fallback detail (no DB required)
         └── [id]/page.tsx  # Detail
+```
+
+### API Routes
+
+```
+app/api/docents/
+├── route.ts          # POST — create docent row (server-side insert, auth via cookies)
+├── generate/route.ts # POST — mock AI generation (sets docent_text, audio_url, status=done)
+└── audio/route.ts    # currently unused
 ```
 
 ### Current (MVP)
@@ -96,9 +106,12 @@ Mock data lives in `lib/mock.ts` (3 sample Korean art descriptions + sample audi
 ### Docent creation flow
 
 1. User uploads image → stored in Supabase Storage (`docent-images/{user_id}/{timestamp}.ext`)
-2. DB entry created with `status: "processing"`
+2. Client POSTs to `/api/docents` (server route) → server Supabase client inserts row with `status: "processing"`
+   - If insert fails → redirects to `/docents/demo` (mock fallback, no DB required)
 3. `/api/docents/generate` called fire-and-forget (no await) — updates DB with text, audio_url, `status: "done"`
-4. User is redirected to detail page and refreshes to see results
+4. User is redirected to `/docents/[id]` and refreshes to see results
+
+> **Why server-side insert?** Supabase RLS `auth.uid()` requires the JWT to be present in the request. Browser clients sometimes fail to pass the JWT correctly to the DB; using the server Supabase client (reads cookies directly) is more reliable.
 
 ### Auth flow
 
@@ -112,7 +125,11 @@ Supabase SSR clients: `lib/supabase/client.ts` (browser) and `lib/supabase/serve
 docents(id, user_id, title, image_url, docent_text, audio_url, status, created_at)
 ```
 
-RLS: `user_id = auth.uid()` on all docents operations.
+RLS policies required on `docents` table:
+- SELECT: `auth.uid() = user_id`
+- INSERT: `auth.uid() = user_id` (WITH CHECK)
+- UPDATE: `auth.uid() = user_id`
+
 Storage bucket: `docent-images` (public read).
 
 ## Environment Variables
@@ -122,5 +139,8 @@ NEXT_PUBLIC_SUPABASE_URL=
 NEXT_PUBLIC_SUPABASE_ANON_KEY=
 ```
 
-Set in `.env.local` locally, and in Vercel project settings for deployment.
-After first Vercel deploy, update Supabase Auth → Site URL to the Vercel deployment URL.
+Set in `.env.local` locally. Already configured in Vercel project settings for production.
+
+## Deployed URL
+
+https://deep-kk2ptu2bp-deepartcommon-9456s-projects.vercel.app/
