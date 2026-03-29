@@ -32,12 +32,10 @@ export default function NewDocentPage() {
 
     try {
       const supabase = createClient();
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error("로그인이 필요합니다.");
 
       // 1. Storage에 이미지 업로드 (실패 시 로컬 미리보기로 대체)
       const ext = file.name.split(".").pop();
-      const storagePath = `${user.id}/${Date.now()}.${ext}`;
+      const storagePath = `demo/${Date.now()}.${ext}`;
       let publicUrl: string | null = null;
 
       const { error: uploadError } = await supabase.storage

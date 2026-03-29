@@ -20,13 +20,11 @@ export default async function DocentDetailPage({
 }) {
   const { id } = await params;
   const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
 
   const { data: docent } = await supabase
     .from("docents")
     .select("*")
     .eq("id", id)
-    .eq("user_id", user!.id)
     .single();
 
   if (!docent) notFound();
