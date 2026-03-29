@@ -35,30 +35,36 @@ export default function NewDocentPage() {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error("로그인이 필요합니다.");
 
-      // 1. Storage에 이미지 업로드
+      // 1. Storage에 이미지 업로드 (실패 시 로컬 미리보기로 대체)
       const ext = file.name.split(".").pop();
-      const path = `${user.id}/${Date.now()}.${ext}`;
+      const storagePath = `${user.id}/${Date.now()}.${ext}`;
+      let publicUrl: string | null = null;
+
       const { error: uploadError } = await supabase.storage
         .from("docent-images")
-        .upload(path, file);
-      if (uploadError) throw uploadError;
+        .upload(storagePath, file);
+      if (!uploadError) {
+        publicUrl = supabase.storage
+          .from("docent-images")
+          .getPublicUrl(storagePath).data.publicUrl;
+      }
 
-      const { data: { publicUrl } } = supabase.storage
-        .from("docent-images")
-        .getPublicUrl(path);
+      // 2. DB에 도슨트 row 생성 (서버 API를 통해 인증 세션 확실히 전달)
+      const createRes = await fetch("/api/docents", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ title: title || file.name, image_url: publicUrl }),
+      });
 
-      // 2. DB에 도슨트 row 생성
-      const { data: docent, error: insertError } = await supabase
-        .from("docents")
-        .insert({
-          user_id: user.id,
-          title: title || file.name,
-          image_url: publicUrl,
-          status: "processing",
-        })
-        .select()
-        .single();
-      if (insertError) throw insertError;
+      if (!createRes.ok) {
+        // DB 저장 불가 → mock 데모 페이지로 fallback
+        const params = new URLSearchParams({ title: title || file.name });
+        if (preview) params.set("image_url", preview);
+        router.push(`/docents/demo?${params.toString()}`);
+        return;
+      }
+
+      const { docent } = await createRes.json();
 
       // 3. Mock 생성 API 호출
       await fetch("/api/docents/generate", {
