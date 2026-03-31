@@ -96,19 +96,22 @@ Mock data lives in `lib/mock.ts` (3 sample Korean art descriptions + sample audi
 
 ### Docent creation flow
 
-1. User uploads image → stored in Supabase Storage (`docent-images/{user_id}/{timestamp}.ext`)
+1. User uploads image → stored in Supabase Storage (`docent-images/demo/{timestamp}.ext`)
+   - If upload fails → show error and abort (do not proceed to DB insert)
 2. Client POSTs to `/api/docents` (server route) → server Supabase client inserts row with `status: "processing"`
    - If insert fails → redirects to `/docents/demo` (mock fallback, no DB required)
-3. `/api/docents/generate` called fire-and-forget (no await) — updates DB with text, audio_url, `status: "done"`
-4. User is redirected to `/docents/[id]` and refreshes to see results
+3. Client awaits `/api/docents/generate` — updates DB with text, audio_url, `status: "done"`
+4. User is redirected to `/docents/[id]`
 
-> **Why server-side insert?** Supabase RLS `auth.uid()` requires the JWT to be present in the request. Browser clients sometimes fail to pass the JWT correctly to the DB; using the server Supabase client (reads cookies directly) is more reliable.
+Both API routes log success/failure to the server console (`[/api/docents]`, `[/api/docents/generate]`).
 
 ### Auth flow
 
-`app/(main)/layout.tsx` (Server Component) calls `supabase.auth.getUser()` and redirects to `/login` if unauthenticated.
-`middleware.ts` handles Supabase session refresh (token rotation) — required for server components to read auth cookies correctly. No auth logic in middleware; auth gate is solely in `(main)/layout.tsx`.
+Auth is **disabled for demo**. No login required; all pages are publicly accessible.
+`middleware.ts` is a passthrough stub (no session logic).
 Supabase SSR clients: `lib/supabase/client.ts` (browser) and `lib/supabase/server.ts` (server).
+
+> **When re-enabling auth:** add `supabase.auth.getUser()` guard back to `app/(main)/layout.tsx`, restore RLS on `docents` table, re-add FK `docents.user_id → profiles(id)`, and replace `DEMO_USER_ID` with real `auth.uid()` in `app/api/docents/route.ts`.
 
 ### Supabase schema
 
@@ -116,12 +119,9 @@ Supabase SSR clients: `lib/supabase/client.ts` (browser) and `lib/supabase/serve
 docents(id, user_id, title, image_url, docent_text, audio_url, status, created_at)
 ```
 
-RLS policies required on `docents` table:
-- SELECT: `auth.uid() = user_id`
-- INSERT: `auth.uid() = user_id` (WITH CHECK)
-- UPDATE: `auth.uid() = user_id`
+RLS: **disabled** on `docents` table (no-auth demo mode).
 
-Storage bucket: `docent-images` (public read).
+Storage bucket: `docent-images` (public read + public insert allowed via policy).
 
 ## Environment Variables
 
