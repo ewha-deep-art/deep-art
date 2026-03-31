@@ -1,7 +1,5 @@
 # CLAUDE.md
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
-
 ## Project Overview
 
 **디바트 (deep-art)** — Multimodal AI-based barrier-free audio docent auto-generation service (멀티모달 AI 기반 배리어프리 오디오 도슨트 자동 생성 서비스)
@@ -9,11 +7,6 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 2026-1학기 캡스톤디자인·창업 프로젝트, Team 18.
 
 The service analyzes exhibition images using vision models, generates accessible docent descriptions via LLM + RAG, and synthesizes audio via TTS — targeting visually impaired exhibition visitors and exhibition content creators.
-
-## Team Workflow
-
-- Decisions and system architecture must be documented (tracked in Notion)
-- Blockers should be surfaced quickly via Slack
 
 ## Git Strategy
 
@@ -25,15 +18,14 @@ The service analyzes exhibition images using vision models, generates accessible
 
 Feature branch naming should clearly reflect the scope of the feature being implemented (e.g., `feature/image-upload`, `feature/tts-integration`).
 
-### Local Testing Before Commit/Push
-
-Before every `git commit` or `git push`, run the local dev server and manually verify that no 404 or 500 errors occur on affected pages:
+**IMPORTANT — Claude Code workflow rule:** Before making any code change in a conversation, Claude MUST first create a feature branch off `dev`:
 
 ```bash
-npm run dev   # start local dev server (localhost:3000)
+git checkout dev && git pull
+git checkout -b feature/<descriptive-name>
 ```
 
-Navigate to all pages touched by your changes and confirm they load correctly without errors.
+This must happen exactly once per conversation, before the first edit. Do not modify files on `main` or `dev` directly.
 
 ### Commit Convention
 
@@ -48,7 +40,6 @@ Commit whenever a meaningful unit of functionality is complete. Use the followin
 
 - Open a PR when a feature branch has fully implemented its intended scope
 - PRs target `dev` (never `main` directly)
-- At least 1 team member review is required before merging to `dev`
 - `main` is updated only via PRs from `dev`
 
 ## Commands
@@ -140,6 +131,10 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=
 ```
 
 Set in `.env.local` locally. Already configured in Vercel project settings for production.
+
+## Claude Code Plugins
+
+Active plugins: `supabase` (MCP — use for DB queries, schema, migrations, logs), `feature-dev` (`/feature-dev`), `code-simplifier` (`/simplify`), `claude-md-management` (`/revise-claude-md`)
 
 ## Deployed URL
 
