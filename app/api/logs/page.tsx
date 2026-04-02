@@ -31,14 +31,14 @@ export default function LogPage() {
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   async function fetchLogs() {
-    const res = await fetch("/api/logs");
+    const res = await fetch("/api/logs/data");
     if (!res.ok) return;
     const data = await res.json();
     setLogs(data.logs);
   }
 
   async function clearLogs() {
-    await fetch("/api/logs", { method: "DELETE" });
+    await fetch("/api/logs/data", { method: "DELETE" });
     setLogs([]);
   }
 
