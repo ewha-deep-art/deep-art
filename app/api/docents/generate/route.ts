@@ -1,10 +1,14 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { getRandomDocentText, MOCK_AUDIO_URL } from "@/lib/mock";
+import { logger } from "@/lib/logger";
 
 export async function POST(req: NextRequest) {
   const { docentId } = await req.json();
-  if (!docentId) return NextResponse.json({ error: "docentId required" }, { status: 400 });
+  if (!docentId) {
+    logger.error("/api/docents/generate", "요청 거부 — docentId 누락");
+    return NextResponse.json({ error: "docentId required" }, { status: 400 });
+  }
 
   const supabase = await createClient();
 
@@ -21,10 +25,10 @@ export async function POST(req: NextRequest) {
     .eq("id", docentId);
 
   if (error) {
-    console.error("[/api/docents/generate] DB update failed:", docentId, error.message);
+    logger.error("/api/docents/generate", `AI 생성 실패 — ID: ${docentId} → ${error.message}`);
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 
-  console.log("[/api/docents/generate] Generation complete:", docentId);
+  logger.log("/api/docents/generate", `AI 생성 완료 — ID: ${docentId}, 텍스트·오디오 저장됨, status: done`);
   return NextResponse.json({ success: true });
 }
