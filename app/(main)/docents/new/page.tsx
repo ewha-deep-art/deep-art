@@ -41,11 +41,14 @@ export default function NewDocentPage() {
       const { error: uploadError } = await supabase.storage
         .from("docent-images")
         .upload(storagePath, file);
-      if (!uploadError) {
-        publicUrl = supabase.storage
-          .from("docent-images")
-          .getPublicUrl(storagePath).data.publicUrl;
+      if (uploadError) {
+        setError("이미지 업로드에 실패했습니다. 다시 시도해주세요.");
+        setLoading(false);
+        return;
       }
+      publicUrl = supabase.storage
+        .from("docent-images")
+        .getPublicUrl(storagePath).data.publicUrl;
 
       // 2. DB에 도슨트 row 생성 (서버 API를 통해 인증 세션 확실히 전달)
       const createRes = await fetch("/api/docents", {

@@ -20,7 +20,11 @@ export async function POST(req: NextRequest) {
     })
     .eq("id", docentId);
 
-  if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+  if (error) {
+    console.error("[/api/docents/generate] DB update failed:", docentId, error.message);
+    return NextResponse.json({ error: error.message }, { status: 500 });
+  }
 
+  console.log("[/api/docents/generate] Generation complete:", docentId);
   return NextResponse.json({ success: true });
 }

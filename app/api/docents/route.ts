@@ -20,8 +20,10 @@ export async function POST(req: NextRequest) {
     .single();
 
   if (insertError) {
+    console.error("[/api/docents] DB insert failed:", insertError.message, insertError.details);
     return NextResponse.json({ error: insertError.message }, { status: 500 });
   }
 
+  console.log("[/api/docents] Docent created:", docent.id, "title:", docent.title);
   return NextResponse.json({ docent });
 }
