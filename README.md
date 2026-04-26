@@ -15,11 +15,11 @@ npm run dev   # http://localhost:3000
 
 ## 팀 정보 수정 방법
 
-**`data/team.json`** 하나만 편집하면 됩니다.
+**`data/team.json`** 하나만 편집하면 됩니다. TypeScript 몰라도 JSON만 수정하면 반영됩니다.
 
 ```
-data/team.json    ← 팀 데이터 (팀원, 프로젝트, 발표 자료, 블로그)
-content/          ← 문서 (마크다운)
+data/team.json    ← 팀원, 프로젝트, 문서 목록
+content/          ← 문서 본문 (마크다운)
 ├── ground-rules.md
 └── related-works.md
 ```
@@ -35,36 +35,26 @@ content/          ← 문서 (마크다운)
 
 ### 프로젝트 추가
 
+프로젝트별 `links`에 발표 자료·시연 영상 등을 추가할 수 있습니다.
+
 ```json
 "projects": [
   {
     "name": "repo-name",
     "desc": "프로젝트 설명",
     "url": "https://github.com/org/repo",
-    "tags": ["Next.js", "Python"]
+    "tags": ["Next.js", "Python"],
+    "links": [
+      { "label": "발표 자료", "url": "https://slides.example.com" },
+      { "label": "시연 영상", "url": "https://youtube.com/watch?v=..." }
+    ]
   }
-]
-```
-
-### 발표 자료 추가
-
-```json
-"presentations": [
-  { "title": "중간 발표", "url": "https://slides.example.com", "date": "2026-04-15" }
-]
-```
-
-### 기술 블로그 추가
-
-```json
-"blogs": [
-  { "title": "포스트 제목", "url": "https://blog.example.com/post", "author": "홍길동" }
 ]
 ```
 
 ### 문서 추가
 
-1. `content/` 에 `.md` 파일 추가
+1. `content/` 에 `.md` 파일 추가 (예: `content/meeting-log.md`)
 2. `docs` 배열에 항목 추가
 
 ```json

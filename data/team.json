@@ -3,8 +3,7 @@
     "name": "디바트",
     "nameEn": "deep-art",
     "tagline": "이화여자대학교 컴퓨터공학과 × 영상예술학과 협업 프로젝트 (연구 트랙)",
-    "course": "2026-1학기 캡스톤디자인과창업프로젝트B Team 18",
-    "github": "https://github.com/ewha-deep-art"
+    "course": "2026-1학기 캡스톤디자인과창업프로젝트B Team 18"
   },
 
   "members": [
@@ -18,13 +17,10 @@
       "name": "bird-xai",
       "desc": "철새 이동 데이터 기반 XAI 인터랙티브 미디어아트 설치 작품",
       "url": "https://github.com/ewha-deep-art/bird-xai",
-      "tags": ["AI", "Art", "XAI", "Unity"]
+      "tags": ["AI", "Art", "XAI", "Unity"],
+      "links": []
     }
   ],
-
-  "presentations": [],
-
-  "blogs": [],
 
   "docs": [
     { "slug": "ground-rules", "title": "Ground Rules",  "desc": "팀 협업 규칙 및 그라운드 룰" },

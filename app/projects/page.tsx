@@ -37,10 +37,27 @@ export default function ProjectsPage() {
                   </Link>
                 </div>
               </CardHeader>
-              <CardContent className="flex gap-2 flex-wrap">
-                {project.tags.map((tag) => (
-                  <Badge key={tag} variant="outline" className="text-xs font-mono">{tag}</Badge>
-                ))}
+              <CardContent className="space-y-3">
+                <div className="flex gap-2 flex-wrap">
+                  {project.tags.map((tag) => (
+                    <Badge key={tag} variant="outline" className="text-xs font-mono">{tag}</Badge>
+                  ))}
+                </div>
+                {project.links.length > 0 && (
+                  <div className="flex gap-3 flex-wrap pt-1">
+                    {project.links.map((link) => (
+                      <Link
+                        key={link.url}
+                        href={link.url}
+                        target="_blank"
+                        className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors"
+                      >
+                        <ExternalLink size={13} />
+                        {link.label}
+                      </Link>
+                    ))}
+                  </div>
+                )}
               </CardContent>
             </Card>
           ))}

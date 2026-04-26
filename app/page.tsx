@@ -6,7 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { TEAM } from "@/lib/team";
 
 export default function HomePage() {
-  const { team, members, projects, presentations, docs } = TEAM;
+  const { team, members, projects, docs } = TEAM;
 
   return (
     <div className="min-h-screen bg-background">
@@ -21,16 +21,6 @@ export default function HomePage() {
             <span className="text-muted-foreground font-normal ml-2 text-2xl">({team.nameEn})</span>
           </h1>
           <p className="text-muted-foreground max-w-xl">{team.tagline}</p>
-          <div className="pt-1">
-            <Link
-              href={team.github}
-              target="_blank"
-              className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors"
-            >
-              <ExternalLink size={14} />
-              {team.github.replace("https://", "")}
-            </Link>
-          </div>
         </section>
 
         {/* 팀원 */}
@@ -98,42 +88,31 @@ export default function HomePage() {
                     </Link>
                   </div>
                 </CardHeader>
-                <CardContent className="flex gap-2 flex-wrap">
-                  {project.tags.map((tag) => (
-                    <Badge key={tag} variant="outline" className="text-xs font-mono">{tag}</Badge>
-                  ))}
+                <CardContent className="space-y-3">
+                  <div className="flex gap-2 flex-wrap">
+                    {project.tags.map((tag) => (
+                      <Badge key={tag} variant="outline" className="text-xs font-mono">{tag}</Badge>
+                    ))}
+                  </div>
+                  {project.links.length > 0 && (
+                    <div className="flex gap-3 flex-wrap">
+                      {project.links.map((link) => (
+                        <Link
+                          key={link.url}
+                          href={link.url}
+                          target="_blank"
+                          className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors"
+                        >
+                          <ExternalLink size={13} />
+                          {link.label}
+                        </Link>
+                      ))}
+                    </div>
+                  )}
                 </CardContent>
               </Card>
             ))}
           </div>
-        </section>
-
-        {/* 발표 자료 */}
-        <section className="space-y-4">
-          <h2 className="text-lg font-semibold tracking-tight">발표 자료</h2>
-          {presentations.length === 0 ? (
-            <Card size="sm">
-              <CardContent className="py-6 text-center text-sm text-muted-foreground">
-                준비 중
-              </CardContent>
-            </Card>
-          ) : (
-            <div className="grid gap-3">
-              {presentations.map((p) => (
-                <Card key={p.url} size="sm">
-                  <CardContent className="flex items-center justify-between py-3">
-                    <div>
-                      <p className="text-sm font-medium">{p.title}</p>
-                      <p className="text-xs text-muted-foreground">{p.date}</p>
-                    </div>
-                    <Link href={p.url} target="_blank" className="text-muted-foreground hover:text-foreground">
-                      <ExternalLink size={15} />
-                    </Link>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-          )}
         </section>
 
         {/* 문서 바로가기 */}

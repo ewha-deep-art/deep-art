@@ -7,23 +7,17 @@ export type Member = {
   blog: string | null;
 };
 
+export type ProjectLink = {
+  label: string;
+  url: string;
+};
+
 export type Project = {
   name: string;
   desc: string;
   url: string;
   tags: string[];
-};
-
-export type Presentation = {
-  title: string;
-  url: string;
-  date: string;
-};
-
-export type Blog = {
-  title: string;
-  url: string;
-  author: string;
+  links: ProjectLink[];
 };
 
 export type Doc = {
@@ -38,12 +32,9 @@ export type TeamData = {
     nameEn: string;
     tagline: string;
     course: string;
-    github: string;
   };
   members: Member[];
   projects: Project[];
-  presentations: Presentation[];
-  blogs: Blog[];
   docs: Doc[];
 };
 

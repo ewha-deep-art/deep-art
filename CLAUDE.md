@@ -58,25 +58,20 @@ app/
 ├── projects/page.tsx   # 프로젝트 레포 목록
 └── docs/
     ├── page.tsx        # 문서 목록
-    └── [slug]/page.tsx # 개별 문서 (content/*.md 렌더링)
-content/
-├── ground-rules.md
-└── related-works.md
+    └── [slug]/page.tsx # 개별 문서 (md 렌더링)
 ```
 
 ### Team Data
 
 모든 팀 데이터는 `data/team.json`에서 관리, `lib/team.ts`가 타입과 함께 import:
 - `members` — 팀원 이름, 역할, GitHub, 블로그
-- `projects` — 레포 목록 + 발표 자료·영상 링크
-- `presentations` — 발표 자료 링크
-- `blogs` — 기술 블로그 링크
-- `docs` — 렌더링할 문서 목록 (content/*.md 연결)
+- `projects` — 레포 목록; `links[]`로 발표 자료·영상 링크 추가
+- `docs` — 렌더링할 문서 목록
 
 ### Document Rendering
 
 `content/` 디렉토리의 마크다운 파일을 `remark` + `remark-html`로 서버 사이드 렌더링.
-새 문서 추가 시 `TEAM.docs` 배열에도 항목 등록 필요.
+새 문서 추가 시 `docs` 배열에 항목 등록 필요.
 
 ## Claude Code Plugins
 
