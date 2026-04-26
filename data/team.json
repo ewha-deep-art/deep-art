@@ -23,7 +23,17 @@
   ],
 
   "docs": [
-    { "slug": "ground-rules", "title": "Ground Rules",  "desc": "팀 협업 규칙 및 그라운드 룰" },
-    { "slug": "related-works", "title": "관련 연구",    "desc": "미디어아트 및 관련 연구" }
+    {
+      "slug": "ground-rules",
+      "title": "Ground Rules",
+      "desc": "팀 협업 규칙 및 그라운드 룰",
+      "file": "Team_Ground_Rule.md"
+    },
+    {
+      "slug": "related-works",
+      "title": "관련 연구",
+      "desc": "미디어아트 및 관련 연구",
+      "file": "Related_Works.md"
+    }
   ]
 }

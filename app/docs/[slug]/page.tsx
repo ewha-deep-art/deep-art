@@ -21,7 +21,7 @@ export default async function DocPage({ params }: Props) {
   const doc = TEAM.docs.find((d) => d.slug === slug);
   if (!doc) notFound();
 
-  const filePath = join(process.cwd(), "content", `${slug}.md`);
+  const filePath = join(process.cwd(), doc.file);
   if (!existsSync(filePath)) notFound();
 
   const raw = readFileSync(filePath, "utf-8");

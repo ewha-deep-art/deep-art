@@ -24,6 +24,7 @@ export type Doc = {
   slug: string;
   title: string;
   desc: string;
+  file: string;
 };
 
 export type TeamData = {

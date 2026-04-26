@@ -17,13 +17,6 @@ npm run dev   # http://localhost:3000
 
 **`data/team.json`** 하나만 편집하면 됩니다. TypeScript 몰라도 JSON만 수정하면 반영됩니다.
 
-```
-data/team.json    ← 팀원, 프로젝트, 문서 목록
-content/          ← 문서 본문 (마크다운)
-├── ground-rules.md
-└── related-works.md
-```
-
 ### 팀원 추가 / 수정
 
 ```json
@@ -54,14 +47,20 @@ content/          ← 문서 본문 (마크다운)
 
 ### 문서 추가
 
-1. `content/` 에 `.md` 파일 추가 (예: `content/meeting-log.md`)
-2. `docs` 배열에 항목 추가
+레포의 어느 경로에 있는 `.md` 파일이든 바로 연결할 수 있습니다.
 
 ```json
 "docs": [
-  { "slug": "meeting-log", "title": "회의록", "desc": "주간 회의 기록" }
+  {
+    "slug": "meeting-log",
+    "title": "회의록",
+    "desc": "주간 회의 기록",
+    "file": "Meeting_Log.md"
+  }
 ]
 ```
+
+> `slug`는 URL 경로, `file`은 레포 루트 기준 실제 파일 경로입니다.
 
 ---
 
