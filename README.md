@@ -1,28 +1,90 @@
 # 디바트 (deep-art)
 
-멀티모달 AI 기반 배리어프리 오디오 도슨트 자동 생성 서비스
-
-전시 이미지를 업로드하면 AI가 시각장애인을 위한 오디오 도슨트를 자동으로 생성합니다.
-
-**서비스 URL:** https://deep-kk2ptu2bp-deepartcommon-9456s-projects.vercel.app/
+2026-1학기 캡스톤디자인과창업프로젝트B Team 18 소개 웹사이트
 
 ---
 
-## 사용 방법
+## 로컬에서 실행하기
 
-### 1. 회원가입 / 로그인
+```bash
+npm install
+npm run dev   # http://localhost:3000
+```
 
-서비스에 접속하여 이메일과 비밀번호로 회원가입 후 로그인합니다.
+---
 
-### 2. 새 도슨트 생성
+## 팀 정보 수정 방법
 
-1. 도슨트 목록 페이지에서 **+ 새 도슨트** 버튼 클릭
-2. 제목 입력 (선택) + 전시 이미지 업로드 (JPG / PNG / WEBP)
-3. **도슨트 생성하기** 버튼 클릭
-4. 상세 페이지로 이동 후 잠시 기다리면 도슨트 텍스트와 오디오가 생성됩니다
+**`data/team.json`** 하나만 편집하면 됩니다.
 
-> 현재는 MVP 단계로 AI 대신 샘플 텍스트와 오디오가 제공됩니다.
+```
+data/team.json    ← 팀 데이터 (팀원, 프로젝트, 발표 자료, 블로그)
+content/          ← 문서 (마크다운)
+├── ground-rules.md
+└── related-works.md
+```
 
-### 3. 도슨트 확인
+### 팀원 추가 / 수정
 
-목록 페이지에서 생성한 도슨트를 클릭하면 텍스트와 오디오를 확인할 수 있습니다.
+```json
+"members": [
+  { "name": "홍길동", "role": "팀장", "github": "hong", "blog": "https://blog.example.com" },
+  { "name": "김철수", "role": "팀원", "github": "kim",  "blog": null }
+]
+```
+
+### 프로젝트 추가
+
+```json
+"projects": [
+  {
+    "name": "repo-name",
+    "desc": "프로젝트 설명",
+    "url": "https://github.com/org/repo",
+    "tags": ["Next.js", "Python"]
+  }
+]
+```
+
+### 발표 자료 추가
+
+```json
+"presentations": [
+  { "title": "중간 발표", "url": "https://slides.example.com", "date": "2026-04-15" }
+]
+```
+
+### 기술 블로그 추가
+
+```json
+"blogs": [
+  { "title": "포스트 제목", "url": "https://blog.example.com/post", "author": "홍길동" }
+]
+```
+
+### 문서 추가
+
+1. `content/` 에 `.md` 파일 추가
+2. `docs` 배열에 항목 추가
+
+```json
+"docs": [
+  { "slug": "meeting-log", "title": "회의록", "desc": "주간 회의 기록" }
+]
+```
+
+---
+
+## 개발 명령어
+
+```bash
+npm run dev      # 개발 서버 (localhost:3000)
+npm run build    # 프로덕션 빌드
+npm run lint     # 린트 검사
+```
+
+## 기술 스택
+
+- **Next.js 16** (App Router, TypeScript)
+- **React 19** / **shadcn/ui v4** (Tailwind CSS v4)
+- **Vercel** — 배포

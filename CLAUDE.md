@@ -2,11 +2,7 @@
 
 ## Project Overview
 
-**디바트 (deep-art)** — Multimodal AI-based barrier-free audio docent auto-generation service (멀티모달 AI 기반 배리어프리 오디오 도슨트 자동 생성 서비스)
-
-2026-1학기 캡스톤디자인·창업 프로젝트, Team 18.
-
-The service analyzes exhibition images using vision models, generates accessible docent descriptions via LLM + RAG, and synthesizes audio via TTS — targeting visually impaired exhibition visitors and exhibition content creators.
+**디바트 (deep-art)** — 2026-1학기 캡스톤디자인과창업프로젝트B Team 18 소개 웹사이트
 
 ## Git Strategy
 
@@ -14,9 +10,7 @@ The service analyzes exhibition images using vision models, generates accessible
 
 - `main` — production-ready code; only receives merges from `dev`
 - `dev` — integration branch; all feature work merges here
-- `feature/*` — short-lived branches for individual features; always branched off `dev`
-
-Feature branch naming should clearly reflect the scope of the feature being implemented (e.g., `feature/image-upload`, `feature/tts-integration`).
+- `feature/*` — short-lived branches; always branched off `dev`
 
 **IMPORTANT — Claude Code workflow rule:** Before making any code change in a conversation, Claude MUST first create a feature branch off `dev`:
 
@@ -29,8 +23,6 @@ This must happen exactly once per conversation, before the first edit. Do not mo
 
 ### Commit Convention
 
-Commit whenever a meaningful unit of functionality is complete. Use the following prefixes:
-
 - `feat:` — new feature
 - `fix:` — bug fix
 - `docs:` — documentation changes
@@ -38,7 +30,6 @@ Commit whenever a meaningful unit of functionality is complete. Use the followin
 
 ### Pull Request & Code Review Process
 
-- Open a PR when a feature branch has fully implemented its intended scope
 - PRs target `dev` (never `main` directly)
 - `main` is updated only via PRs from `dev`
 
@@ -55,7 +46,6 @@ npm run lint     # lint check
 - **Next.js 16** (App Router, TypeScript) — `app/` directory
 - **React 19** — `react@19.2.4`
 - **shadcn/ui v4** (base-ui, Tailwind CSS v4) — `components/ui/`
-- **Supabase** (Auth, PostgreSQL, Storage) — `lib/supabase/`
 - **Vercel** — deployment
 
 ## Architecture
@@ -64,77 +54,33 @@ npm run lint     # lint check
 
 ```
 app/
-├── (auth)/          # Public pages (no auth check)
-│   ├── login/
-│   └── signup/
-└── (main)/          # Protected pages — layout.tsx enforces auth
-    └── docents/
-        ├── page.tsx       # List
-        ├── new/page.tsx   # Create
-        ├── demo/page.tsx  # Mock fallback detail (no DB required)
-        └── [id]/page.tsx  # Detail
+├── page.tsx            # 메인 (팀 소개 + 팀원 + 프로젝트 + 문서)
+├── projects/page.tsx   # 프로젝트 레포 목록
+└── docs/
+    ├── page.tsx        # 문서 목록
+    └── [slug]/page.tsx # 개별 문서 (content/*.md 렌더링)
+content/
+├── ground-rules.md
+└── related-works.md
 ```
 
-### API Routes
+### Team Data
 
-```
-app/api/docents/
-├── route.ts          # POST — create docent row (server-side insert, auth via cookies)
-├── generate/route.ts # POST — mock AI generation (sets docent_text, audio_url, status=done)
-└── audio/route.ts    # currently unused
-```
+모든 팀 데이터는 `data/team.json`에서 관리, `lib/team.ts`가 타입과 함께 import:
+- `members` — 팀원 이름, 역할, GitHub, 블로그
+- `projects` — 레포 목록 + 발표 자료·영상 링크
+- `presentations` — 발표 자료 링크
+- `blogs` — 기술 블로그 링크
+- `docs` — 렌더링할 문서 목록 (content/*.md 연결)
 
-### Current (MVP)
+### Document Rendering
 
-Three core modules, AI replaced with Mock APIs for now:
-
-1. **Image Analysis** — `app/api/docents/generate/route.ts` (mock → replace with Vision/LMM)
-2. **Content Generation** — same route, returns sample text (mock → replace with LLM+RAG)
-3. **Voice Synthesis** — `app/api/docents/generate/route.ts` also sets mock audio_url (mock → replace with TTS); `app/api/docents/audio/route.ts` exists but is currently unused
-
-Mock data lives in `lib/mock.ts` (3 sample Korean art descriptions + sample audio URL).
-
-### Docent creation flow
-
-1. User uploads image → stored in Supabase Storage (`docent-images/demo/{timestamp}.ext`)
-   - If upload fails → show error and abort (do not proceed to DB insert)
-2. Client POSTs to `/api/docents` (server route) → server Supabase client inserts row with `status: "processing"`
-   - If insert fails → redirects to `/docents/demo` (mock fallback, no DB required)
-3. Client awaits `/api/docents/generate` — updates DB with text, audio_url, `status: "done"`
-4. User is redirected to `/docents/[id]`
-
-Both API routes log success/failure to the server console (`[/api/docents]`, `[/api/docents/generate]`).
-
-### Auth flow
-
-Auth is **disabled for demo**. No login required; all pages are publicly accessible.
-`middleware.ts` is a passthrough stub (no session logic).
-Supabase SSR clients: `lib/supabase/client.ts` (browser) and `lib/supabase/server.ts` (server).
-
-> **When re-enabling auth:** add `supabase.auth.getUser()` guard back to `app/(main)/layout.tsx`, restore RLS on `docents` table, re-add FK `docents.user_id → profiles(id)`, and replace `DEMO_USER_ID` with real `auth.uid()` in `app/api/docents/route.ts`.
-
-### Supabase schema
-
-```sql
-docents(id, user_id, title, image_url, docent_text, audio_url, status, created_at)
-```
-
-RLS: **disabled** on `docents` table (no-auth demo mode).
-
-Storage bucket: `docent-images` (public read + public insert allowed via policy).
-
-## Environment Variables
-
-```
-NEXT_PUBLIC_SUPABASE_URL=
-NEXT_PUBLIC_SUPABASE_ANON_KEY=
-```
-
-Set in `.env.local` locally. Already configured in Vercel project settings for production.
+`content/` 디렉토리의 마크다운 파일을 `remark` + `remark-html`로 서버 사이드 렌더링.
+새 문서 추가 시 `TEAM.docs` 배열에도 항목 등록 필요.
 
 ## Claude Code Plugins
 
-Active plugins: `supabase` (MCP — use for DB queries, schema, migrations, logs), `feature-dev` (`/feature-dev`), `code-simplifier` (`/simplify`), `claude-md-management` (`/revise-claude-md`)
+Active plugins: `feature-dev` (`/feature-dev`), `code-simplifier` (`/simplify`)
 
 ## Deployed URL
 
